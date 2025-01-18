@@ -1,9 +1,10 @@
+using System;
 using UnityEngine;
 
 public class wheel_controller : MonoBehaviour
 {
 
-    private float turnSpeed = 30f;
+    private float turnSpeed = 50f;
     private float maxTurnAngle = 50f;
 
     public void TurnLeft(float deltaTime)
@@ -19,12 +20,14 @@ public class wheel_controller : MonoBehaviour
         {
             if (currentY <= 0)
             {
-                transform.localRotation = Quaternion.Euler(currentRotation.eulerAngles.x, Mathf.Max(-maxTurnAngle, currentY - (turnSpeed * deltaTime)), currentRotation.eulerAngles.z);
+                transform.localRotation = Quaternion.Euler(currentRotation.eulerAngles.x, currentY - (turnSpeed * deltaTime), currentRotation.eulerAngles.z);
             }
             else {
                 transform.localRotation = Quaternion.Euler(currentRotation.eulerAngles.x, currentY - (turnSpeed * deltaTime), currentRotation.eulerAngles.z);
             }
         }
+
+        ClampRotation();
     }
 
     public void TurnRight(float deltatime) {
@@ -38,12 +41,29 @@ public class wheel_controller : MonoBehaviour
         {
             if (currentY >= 0)
             {
-                transform.localRotation = Quaternion.Euler(currentRotation.eulerAngles.x, Mathf.Min(maxTurnAngle, currentY + (turnSpeed * deltatime)), currentRotation.eulerAngles.z);
+                transform.localRotation = Quaternion.Euler(currentRotation.eulerAngles.x, currentY + (turnSpeed * deltatime), currentRotation.eulerAngles.z);
             }
             else
             {
                 transform.localRotation = Quaternion.Euler(currentRotation.eulerAngles.x, currentY + (turnSpeed * deltatime), currentRotation.eulerAngles.z);
             }
+        }
+
+        ClampRotation();
+    }
+
+    private void ClampRotation() {
+        Quaternion currentRotation = transform.localRotation;
+        // clamp the rotation to the max turn angle
+        float currentY = currentRotation.eulerAngles.y;
+        if (currentY > 180) {
+            currentY -= 360;
+        }
+
+        if (currentY > maxTurnAngle) {
+            transform.localRotation = Quaternion.Euler(currentRotation.eulerAngles.x, maxTurnAngle, currentRotation.eulerAngles.z);
+        } else if (currentY < -maxTurnAngle) {
+            transform.localRotation = Quaternion.Euler(currentRotation.eulerAngles.x, -maxTurnAngle, currentRotation.eulerAngles.z);
         }
     }
 
