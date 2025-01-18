@@ -160,11 +160,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   maxSpeed: 100
-  maxTurningSpeed: 50
   maxReverseSpeed: -30
   acceleration: 10
-  deceleration: 30
-  turnSpeed: 50
+  decelerationFactor: 2
+  brakingForce: 20
   frontLeftWheel: {fileID: 29540693}
   frontRightWheel: {fileID: 1485727134}
   backLeftWheel: {fileID: 615481823}
@@ -451,8 +450,8 @@ Transform:
   m_GameObject: {fileID: 1190800422}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.404, z: -0.0010021}
-  m_LocalScale: {x: 5.3, y: 1, z: 10.061188}
+  m_LocalPosition: {x: 0, y: 0.404, z: -0.0009936}
+  m_LocalScale: {x: 79.60877, y: 1, z: 74.52615}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

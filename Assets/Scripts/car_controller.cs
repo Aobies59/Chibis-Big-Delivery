@@ -4,13 +4,13 @@ using UnityEngine;
 public class car_controller : MonoBehaviour
 {
     public float speed = 0.0f;
-    const float maxPossibleSpeed = 100.0f;
     public float maxSpeed = 100.0f;
-    public float maxTurningSpeed = 50.0f;
     public float maxReverseSpeed = -30.0f;
     public float acceleration = 10.0f;
-    public float deceleration = 30.0f;
-    public float turnSpeed = 50.0f;
+    public float decelerationFactor = 2f;
+    public float brakingForce = 20.0f;
+
+    private float inputAxis;
 
     // wheels objects
     public GameObject frontLeftWheel;
@@ -28,46 +28,62 @@ public class car_controller : MonoBehaviour
 
     void Update()
     {
+        inputAxis = Input.GetAxis("Vertical");
         float movementDirection = Input.GetAxis("Vertical");
 
-        float targetSpeed = 0;
-        if (movementDirection > 0) {
-            targetSpeed = maxSpeed;
-        } else if (movementDirection < 0) {
-            targetSpeed = maxReverseSpeed;
-        }
+        UpdateSpeed();
+        transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
-        float accelerationFactor;
-        if (speed < targetSpeed) {
-            if (speed > 0) {
-                accelerationFactor = deceleration;
-            } else {
-                accelerationFactor = acceleration;
+        UpdateWheels();
+
+    }
+
+    void UpdateSpeed() {
+        if (Input.GetKey(KeyCode.Space)) {
+            ApplyBraking();
+            return;
+        }
+        if (inputAxis != 0) {
+            if (inputAxis > 0 && speed < 0) {
+                ApplyBraking();
+                return;
+            } else if (inputAxis < 0 && speed > 0) {
+                ApplyBraking();
+                return;
             }
-        } else {
-            accelerationFactor = acceleration;
-        }
 
-        float speedDifference = targetSpeed - speed;
-        float easing = Mathf.Sign(speedDifference) * Mathf.Pow(Math.Abs(speedDifference), 0.5f);
-        speed += easing * accelerationFactor * Time.deltaTime;
+            float accelerationMultiplier;
+            if (speed < 60f) {
+                accelerationMultiplier = 1f;
+            } else if (speed < 80f) {
+                accelerationMultiplier = 0.5f;
+            } else {
+                accelerationMultiplier = 0.2f;
+            }
 
-        if (movementDirection == 0) {
-            speed = Mathf.MoveTowards(speed, 0, deceleration * Time.deltaTime);
-        } else {
+            speed += inputAxis * acceleration * accelerationMultiplier * Time.deltaTime;
+
             speed = Mathf.Clamp(speed, maxReverseSpeed, maxSpeed);
-        }
-
-        transform.Translate(0, 0, speed * Time.deltaTime);
-
-        float turnDirection = Input.GetAxis("Horizontal");
-        
-        if (turnDirection == 0) {
-            maxSpeed = maxPossibleSpeed;
         } else {
-            maxSpeed = maxTurningSpeed;
+            speed = Mathf.MoveTowards(speed, 0, decelerationFactor * Time.deltaTime);
         }
-        
+    }
+
+    void ApplyBraking() {
+        if (speed > 0) {
+            speed -= brakingForce * Time.deltaTime;
+        } else if (speed < 0) {
+            speed += brakingForce * Time.deltaTime;
+        }
+
+        if (Mathf.Abs(speed) < 0.1f) {
+            speed = 0;
+        }
+    }
+
+    void UpdateWheels() {
+        float turnDirection = Input.GetAxis("Horizontal");
+
         if (turnDirection < 0) {
             frontLeftWheelController.TurnLeft(Time.deltaTime);
             frontRightWheelController.TurnLeft(Time.deltaTime);
