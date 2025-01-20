@@ -17,7 +17,7 @@ public class CameraFollow : MonoBehaviour
         previousTargetPosition = target.position;
     }
 
-    void Update()
+    void LateUpdate()
     {   
         Vector3 desiredPosition = target.position;
         Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, positionSpeed * Time.deltaTime);
