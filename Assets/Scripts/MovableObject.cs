@@ -2,13 +2,16 @@ using UnityEngine;
 
 public class MovableObject : MonoBehaviour
 {
+    public bool isSelected = false;
     public bool isActive = true;
-    public float moveSpeed = 4.0f;
+
+    float moveSpeed = 4.0f;
     Vector3 initialPosition;
     Quaternion initialRotation;
 
     void Start()
     {
+        // TEMP
         initialPosition = transform.position;
         initialRotation = transform.rotation;
     }
@@ -23,6 +26,10 @@ public class MovableObject : MonoBehaviour
 
     void Update()
     {
+        if (!isSelected) {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.R)) {
             Reset();
         }
